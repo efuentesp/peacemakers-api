@@ -16,8 +16,10 @@ require('./config/passport')(passport, config)
 
 # Express
 express = require 'express'
+expressValidator = require 'express-validator'
 app = express()
 app.use express.bodyParser()
+app.use expressValidator()
 app.use passport.initialize()
 
 # Modules

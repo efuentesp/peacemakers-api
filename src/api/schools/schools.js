@@ -41,20 +41,28 @@ exports.show = function(req, res) {
 };
 
 exports.create = function(req, res) {
-  var school;
+  var errors, school;
   console.log("POST: ");
   console.log(req.body);
-  school = new School(req.body);
-  school.save(function(err) {
-    if (!err) {
-      return console.log("created");
-    } else {
-      return console.log(err);
-      res.statusCode = 500;
-      return res.send("Error 500: Internal Server Error found!");
-    }
-  });
-  return res.send(school);
+  req.assert('name', 'Please enter a name').notEmpty();
+  errors = req.validationErrors(true);
+  if (!errors) {
+    school = new School(req.body);
+    school.save(function(err) {
+      if (!err) {
+        return console.log("created");
+      } else {
+        console.log(err);
+        res.statusCode = 500;
+        return res.send("Error 500: Internal Server Error found!");
+      }
+    });
+    return res.send(school);
+  } else {
+    console.log(errors);
+    res.statusCode = 400;
+    return res.send(errors);
+  }
 };
 
 exports.update = function(req, res) {

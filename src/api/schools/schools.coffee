@@ -39,15 +39,25 @@ exports.show = (req, res) ->
 exports.create = (req, res) ->
   console.log "POST: "
   console.log req.body
-  school = new School req.body
-  school.save (err) ->
-    if not err
-      return console.log "created"
-    else
-      return console.log err
-      res.statusCode = 500
-      return res.send "Error 500: Internal Server Error found!"
-  return res.send school
+
+  req.assert('name', 'Please enter a name').notEmpty()
+
+  errors = req.validationErrors(true)
+
+  if not errors
+    school = new School req.body
+    school.save (err) ->
+      if not err
+        return console.log "created"
+      else
+        console.log err
+        res.statusCode = 500
+        return res.send "Error 500: Internal Server Error found!"
+    return res.send school
+  else
+    console.log errors
+    res.statusCode = 400
+    return res.send errors
 
 # PUT /api/schools/{school-id}
 # update a school
