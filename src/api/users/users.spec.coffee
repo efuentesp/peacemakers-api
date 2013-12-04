@@ -113,7 +113,7 @@ describe "User Model", ->
     mongoose.connection.db.dropCollection "permissions", (err) ->
       done(err) if err
     mongoose.connection.db.dropCollection "roles", (err) ->
-      done(err) if err      
+      done(err) if err
     mongoose.connection.db.dropCollection "users", (err) ->
       done(err) if err
       done()

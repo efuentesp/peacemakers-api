@@ -8,8 +8,6 @@ mongoose = require('mongoose');
 School = mongoose.model('School');
 
 exports.list = function(req, res) {
-  console.log("GET: ");
-  console.log(req.query);
   return School.find().exec(function(err, schools) {
     if (!err) {
       return res.send(schools);
@@ -22,7 +20,6 @@ exports.list = function(req, res) {
 };
 
 exports.show = function(req, res) {
-  console.log("GET: " + req.params.id);
   return School.findById(req.params.id, function(err, school) {
     if (!err) {
       if (school) {
@@ -42,15 +39,13 @@ exports.show = function(req, res) {
 
 exports.create = function(req, res) {
   var errors, school;
-  console.log("POST: ");
-  console.log(req.body);
   req.assert('name', 'Please enter a name').notEmpty();
   errors = req.validationErrors(true);
   if (!errors) {
     school = new School(req.body);
     school.save(function(err) {
       if (!err) {
-        return console.log("created");
+        return res.send(school);
       } else {
         console.log(err);
         res.statusCode = 500;
@@ -59,14 +54,12 @@ exports.create = function(req, res) {
     });
     return res.send(school);
   } else {
-    console.log(errors);
     res.statusCode = 400;
     return res.send(errors);
   }
 };
 
 exports.update = function(req, res) {
-  console.log("PUT: " + req.params.id);
   return School.findById(req.params.id, function(err, school) {
     if (!err) {
       if (school) {
@@ -74,7 +67,7 @@ exports.update = function(req, res) {
         school.www = req.body.www;
         return school.save(function(err) {
           if (!err) {
-            console.log("updated");
+            return res.send(school);
           } else {
             console.log(err);
             res.statusCode = 500;
@@ -96,13 +89,11 @@ exports.update = function(req, res) {
 };
 
 exports.destroy = function(req, res) {
-  console.log("DELETE: " + req.params.id);
   return School.findById(req.params.id, function(err, school) {
     if (!err) {
       if (school) {
         return school.remove(function(err) {
           if (!err) {
-            console.log("removed");
             return res.send('');
           } else {
             console.log(err);
