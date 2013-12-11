@@ -10,7 +10,11 @@ PeriodSchema = new Schema({
     type: String,
     "default": ''
   },
-  classes: [ClassSchema]
+  classes: [ClassSchema],
+  createdAt: {
+    type: Date,
+    "default": Date.now
+  }
 });
 
 StageSchema = new Schema({

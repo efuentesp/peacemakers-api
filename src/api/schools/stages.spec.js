@@ -28,7 +28,7 @@ describe("Stage API", function() {
     });
   });
   describe("POST /schools/:id/stages", function() {
-    it("should creates a new Stage in an existing School", function(done) {
+    it("should creates a new Stage into an existing School", function(done) {
       var stage,
         _this = this;
       stage = {

@@ -24,7 +24,7 @@ describe "Period API", ->
 
   describe "POST /schools/:id/stages/:id/periods", ->
 
-    it "should creates a new Period into a Stage within an existing School", (done) ->
+    it "should creates a new Period into a Stage/School", (done) ->
       period =
         name: "Period 1"
 

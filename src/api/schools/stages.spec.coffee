@@ -19,7 +19,7 @@ describe "Stage API", ->
 
   describe "POST /schools/:id/stages", ->
 
-    it "should creates a new Stage in an existing School", (done) ->
+    it "should creates a new Stage into an existing School", (done) ->
       stage =
         name: "Stage 1"
 

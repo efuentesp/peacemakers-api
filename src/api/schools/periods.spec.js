@@ -37,7 +37,7 @@ describe("Period API", function() {
     });
   });
   describe("POST /schools/:id/stages/:id/periods", function() {
-    return it("should creates a new Period into a Stage within an existing School", function(done) {
+    return it("should creates a new Period into a Stage/School", function(done) {
       var period,
         _this = this;
       period = {

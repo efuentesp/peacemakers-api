@@ -1,17 +1,18 @@
 passport = require 'passport'
 mongoose = require 'mongoose'
 School = mongoose.model('School')
+Stage = mongoose.model('Stage')
+Period = mongoose.model('Period')
 
-# GET /api/schools/{school-id}}/stages/{stage-id}/periods/{period-id}/classes
-# list all classes in a period in a stage for a school
+# GET /api/schools/{school-id}}/stages/{stage-id}/periods
+# list all periods for a stage in a school
 exports.list = (req, res) ->
   console.log "GET: #{req.params}"
   return School.findById req.params.school, (err, school) ->
     if not err
       if school
-        stage = school.stages.id(req.params.school)
-        period = stage.id(req.params.period)
-        return res.send .classes period.classes
+        stage = school.stages.id(req.params.stage)
+        return res.send stage.periods
       else
         console.log "Resource not found!"
         res.statusCode = 400
@@ -21,8 +22,8 @@ exports.list = (req, res) ->
       res.statusCode = 500
       return res.send "Error 500: Internal Server Error found!"
 
-# POST /api/schools/{school-id}/stages/{stage-id}/classes
-# create a new school
+# POST /api/schools/{school-id}/stages/{stage-id}/periods
+# create a new period for a stage in a school
 exports.create = (req, res) ->
   #console.log "POST: "
   #console.log req.body
@@ -36,13 +37,11 @@ exports.create = (req, res) ->
       if not err
         if school
           stage = school.stages.id(req.params.stage)
-          period = stage.periods.id(req.params.period)
-          cls = period.classes.addToSet req.body
+          period = stage.periods.addToSet req.body
           school.save (err) ->
             if not err
               #console.log "created"
-              return res.send school.stages.id(req.params.stage).periods.id(req.params.period).classes[period.classes.length-1]
-              #return res.send cls
+              return res.send period
             else
               console.log err
               res.statusCode = 500
@@ -56,6 +55,6 @@ exports.create = (req, res) ->
         res.statusCode = 500
         return res.send "Error 500: Internal Server Error found!"
   else
-    console.log errors
+    #console.log errors
     res.statusCode = 400
     return res.send errors

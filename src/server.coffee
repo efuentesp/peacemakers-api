@@ -9,6 +9,7 @@ mongoose.connect config.db
 # Models
 require './models/user'
 require './models/school'
+require './models/classmate'
 
 # Authentication Middlware
 passport = require 'passport'

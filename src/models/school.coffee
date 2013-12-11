@@ -5,6 +5,7 @@ Schema = mongoose.Schema
 PeriodSchema = new Schema {
   name:       { type: String, default: '' }
   classes:    [ClassSchema]
+  createdAt:  { type: Date, default: Date.now }
 }
 
 # Stage

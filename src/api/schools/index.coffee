@@ -1,8 +1,9 @@
 passport = require "passport"
 authorization = require "../auth/authorization"
 schools = require './schools'
-stages = require './stages'
+stages  = require './stages'
 classes = require './classes'
+periods = require './periods'
 
 module.exports = (app) ->
   bearer = passport.authenticate('bearer', { session: false })
@@ -17,5 +18,8 @@ module.exports = (app) ->
   app.get     '/api/schools/:school/stages',                  stages.list
   app.post    '/api/schools/:school/stages',                  stages.create
 
-  app.get     '/api/schools/:school/stages/:stage/classes',   classes.list
-  app.post    '/api/schools/:school/stages/:stage/classes',   classes.create
+  app.get     '/api/schools/:school/stages/:stage/periods',   periods.list
+  app.post    '/api/schools/:school/stages/:stage/periods',   periods.create
+
+  app.get     '/api/schools/:school/stages/:stage/periods/:period/classes',   classes.list
+  app.post    '/api/schools/:school/stages/:stage/periods/:period/classes',   classes.create

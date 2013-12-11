@@ -13,6 +13,8 @@ require('./models/user');
 
 require('./models/school');
 
+require('./models/classmate');
+
 passport = require('passport');
 
 require('./config/passport')(passport, config);
