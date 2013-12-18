@@ -58,6 +58,7 @@ describe("Schools API", function() {
           throw err;
         }
         res.should.be.json;
+        res.body.length.should.equal(4);
         return done();
       });
     });

@@ -34,6 +34,12 @@ ClassSchema = new Schema({
     type: String,
     "default": ''
   },
+  classmates: [
+    {
+      type: Schema.ObjectId,
+      ref: 'Classmate'
+    }
+  ],
   createdAt: {
     type: Date,
     "default": Date.now

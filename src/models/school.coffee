@@ -18,6 +18,7 @@ StageSchema = new Schema {
 # Class
 ClassSchema = new Schema {
   name:       { type: String, default: '' }
+  classmates: [ type: Schema.ObjectId, ref: 'Classmate' ]
   createdAt:  { type: Date, default: Date.now }
 }
 

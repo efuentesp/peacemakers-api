@@ -47,7 +47,7 @@ describe "Schools API", ->
         .end (err, res) ->
           throw err if err
           res.should.be.json
-          #res.body.should.have.length(3)
+          res.body.length.should.equal(4)
           #res.body.should.include({ name: "Test School 2" })
           done()
 

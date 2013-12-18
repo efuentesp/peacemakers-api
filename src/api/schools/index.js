@@ -13,7 +13,7 @@ classes = require('./classes');
 
 periods = require('./periods');
 
-module.exports = function(app) {
+module.exports = function(app, config) {
   var bearer;
   bearer = passport.authenticate('bearer', {
     session: false

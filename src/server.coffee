@@ -28,7 +28,8 @@ auth = require('./api/auth')(app, config)
 permissions = require('./api/permissions')(app, config)
 roles = require('./api/roles')(app, config)
 users = require('./api/users')(app, config)
-schools = require('./api/schools')(app)
+schools = require('./api/schools')(app, config)
+classmates = require('./api/classmates')(app, config)
 
 # Start server
 app.listen 3000
