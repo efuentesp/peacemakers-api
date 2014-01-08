@@ -3,7 +3,7 @@ mongoose = require 'mongoose'
 School = mongoose.model('School')
 
 # GET /api/schools/{school-id}}/stages/{stage-id}/periods/{period-id}/classes
-# list all classes in a period in a stage for a school
+# lists all classes in a period in a stage for a school
 exports.list = (req, res) ->
   console.log "GET: #{req.params}"
   return School.findById req.params.school, (err, school) ->
@@ -11,7 +11,7 @@ exports.list = (req, res) ->
       if school
         stage = school.stages.id(req.params.school)
         period = stage.id(req.params.period)
-        return res.send .classes period.classes
+        return res.send period.classes
       else
         console.log "Resource not found!"
         res.statusCode = 400

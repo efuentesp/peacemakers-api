@@ -12,5 +12,6 @@ module.exports = function(app, config) {
   bearer = passport.authenticate('bearer', {
     session: false
   });
+  app.get('/api/schools/:school/stages/:stage/periods/:period/classes/:cls/classmates', classmates.list);
   return app.post('/api/schools/:school/stages/:stage/periods/:period/classes/:cls/classmates', classmates.create);
 };

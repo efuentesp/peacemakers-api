@@ -5,7 +5,6 @@ Schema = mongoose.Schema
 ClassmateSchema = new Schema {
   firstName:  { type: String, default: '' }
   lastName:   { type: String, default: '' }
-  photo:      { type: String, default: '' }
   createdAt:  { type: Date, default: Date.now }
 }
 

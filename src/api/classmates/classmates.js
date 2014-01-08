@@ -15,6 +15,29 @@ School = mongoose.model('School');
 
 Classmate = mongoose.model('Classmate');
 
+exports.list = function(req, res) {
+  console.log("GET: " + req.params);
+  return School.findById(req.params.school, function(err, school) {
+    var cls, period, stage;
+    if (!err) {
+      if (school) {
+        stage = school.stages.id(req.params.school);
+        period = stage.id(req.params.period);
+        cls = period.id(req.params.cls);
+        return res.send(cls.classmates);
+      } else {
+        console.log("Resource not found!");
+        res.statusCode = 400;
+        return res.send("Error 400: Resource not found!");
+      }
+    } else {
+      return console.log(err);
+      res.statusCode = 500;
+      return res.send("Error 500: Internal Server Error found!");
+    }
+  });
+};
+
 exports.create = function(req, res) {
   var classmate, errors, photo;
   photo = req.files.photo;

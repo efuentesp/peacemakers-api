@@ -14,10 +14,13 @@ describe "Classmate API", ->
   url = "http://localhost:3000"
 
   before (done) ->
+    class1 = new Class
+      name: "Class 1.2.1"
+
     @school = new School
       name: "School 1"
       stages: [
-        { name: "Stage 1", periods: [ { name: "Period 1.1" }, { name: "Period 1.2", classes: [ {name: "Class 1.2.1"} ] } ] }
+        { name: "Stage 1", periods: [ { name: "Period 1.1" }, { name: "Period 1.2", classes: [ class1 ] } ] }
         { name: "Stage 2", periods: [ { name: "Period 2.1" }, { name: "Period 2.2" } ] }
       ]
     @school.save (err) ->

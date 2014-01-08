@@ -14,10 +14,6 @@ ClassmateSchema = new Schema({
     type: String,
     "default": ''
   },
-  photo: {
-    type: String,
-    "default": ''
-  },
   createdAt: {
     type: Date,
     "default": Date.now

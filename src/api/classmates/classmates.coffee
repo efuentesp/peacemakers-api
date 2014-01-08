@@ -7,8 +7,29 @@ im = require 'imagemagick'
 School = mongoose.model('School')
 Classmate = mongoose.model('Classmate')
 
-# POST /api/classes/{class-id}/classmates
-# create a new classmate into a class
+# GET /api/schools/{school-id}/stages/{stage-id}/periods/{period-id}/classes/{class-id}/classmates
+# lists all classmates in a class
+exports.list = (req, res) ->
+  console.log "GET: #{req.params}"
+  return School.findById req.params.school, (err, school) ->
+    if not err
+      if school
+        stage = school.stages.id(req.params.school)
+        period = stage.id(req.params.period)
+        cls = period.id(req.params.cls)
+        return res.send cls.classmates
+      else
+        console.log "Resource not found!"
+        res.statusCode = 400
+        return res.send "Error 400: Resource not found!"
+    else
+      return console.log err
+      res.statusCode = 500
+      return res.send "Error 500: Internal Server Error found!"
+
+
+# POST /api/schools/{school-id}/stages/{stage-id}/periods/{period-id}/classes/{class-id}/classmates
+# create a new classmate in a class
 exports.create = (req, res) ->
   #console.log "POST: "
   #console.log req.body
@@ -44,7 +65,7 @@ exports.create = (req, res) ->
                   done()
           deletePhoto: (done) ->
             fs.unlinkSync tempPath
-        
+
         return res.send classmate
       else
         console.log err
@@ -55,3 +76,5 @@ exports.create = (req, res) ->
     #console.log errors
     res.statusCode = 400
     return res.send errors
+
+

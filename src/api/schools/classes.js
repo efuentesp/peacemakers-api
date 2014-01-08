@@ -15,7 +15,7 @@ exports.list = function(req, res) {
       if (school) {
         stage = school.stages.id(req.params.school);
         period = stage.id(req.params.period);
-        return res.send.classes(period.classes);
+        return res.send(period.classes);
       } else {
         console.log("Resource not found!");
         res.statusCode = 400;

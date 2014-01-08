@@ -25,6 +25,10 @@ describe("Classmate API", function() {
   var url;
   url = "http://localhost:3000";
   before(function(done) {
+    var class1;
+    class1 = new Class({
+      name: "Class 1.2.1"
+    });
     this.school = new School({
       name: "School 1",
       stages: [
@@ -35,11 +39,7 @@ describe("Classmate API", function() {
               name: "Period 1.1"
             }, {
               name: "Period 1.2",
-              classes: [
-                {
-                  name: "Class 1.2.1"
-                }
-              ]
+              classes: [class1]
             }
           ]
         }, {
