@@ -20,14 +20,26 @@ describe "Classmate API", ->
     @school = new School
       name: "School 1"
       stages: [
-        { name: "Stage 1", periods: [ { name: "Period 1.1" }, { name: "Period 1.2", classes: [ class1 ] } ] }
+        { name: "Stage 1", periods: [ { name: "Period 1.1" }, { name: "Period 1.2" } ] }
         { name: "Stage 2", periods: [ { name: "Period 2.1" }, { name: "Period 2.2" } ] }
       ]
+    #@school.stages[0].periods[1].classes.addToSet class1
     @school.save (err) ->
       should.not.exist err
-      done()
+      #done()
 
-  describe "POST /classes/:id/classmates", ->
+    request(url)
+      .post("/api/schools/" + @school._id + "/stages/" + @school.stages[0]._id + "/periods/" + @school.stages[0].periods[1]._id + "/classes")
+      .send(class1)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end (err, res) =>
+        throw err if err
+        @class_added = res.body
+        @class_added.name.should.equal('Class 1.2.1')
+        done()
+
+  describe "POST /schools/:id/stages/:id/periods/:id/classes/:id/classmates", ->
 
     it "should creates a new Classmate", (done) ->
       classmate =
@@ -35,7 +47,7 @@ describe "Classmate API", ->
         lastName: "Classmate LastName"
 
       request(url)
-        .post("/api/schools/" + @school._id + "/stages/" + @school.stages[0]._id + "/periods/" + @school.stages[0].periods[1]._id + "/classes/" + @school.stages[0].periods[1].classes[0]._id + "/classmates")
+        .post("/api/schools/" + @school._id + "/stages/" + @school.stages[0]._id + "/periods/" + @school.stages[0].periods[1]._id + "/classes/" + @class_added._id + "/classmates")
         #.post("/api/classes/" + @school.stages[0].periods[1].classes[0]._id + "/classmates")
         .field("firstName", classmate.firstName)
         .field("lastName", classmate.lastName)
@@ -43,23 +55,36 @@ describe "Classmate API", ->
         .end (err, res) =>
           throw err if err
           res.should.have.status 200
-          classmate_added = res.body
+          @classmate_added = res.body
           #classmate_added.should.have.property('_id')
-          classmate_added.firstName.should.equal('Classmate FirstName')
-          classmate_added.lastName.should.equal('Classmate LastName')
+          @classmate_added.firstName.should.equal('Classmate FirstName')
+          @classmate_added.lastName.should.equal('Classmate LastName')
           #classmate_added.createdAt.should.not.equal(null)
           done()
 
-    it "should link a Classmate within a Class", (done) ->
+    it "should link a Classmate in a Class", (done) ->
       request(url)
-        .get("/api/schools/" + @school._id + "/stages/" + @school.stages[0]._id + "/periods/" + @school.stages[0].periods[1]._id + "/classes/" + @school.stages[0].periods[1].classes[0]._id + "/classmates")
+        .get("/api/schools/" + @school._id + "/stages/" + @school.stages[0]._id + "/periods/" + @school.stages[0].periods[1]._id + "/classes/" + @class_added._id + "/classmates/" + @classmate_added._id)
         .expect('Content-Type', /json/)
         .expect(200)
         .end (err, res) ->
           throw err if err
           res.should.be.json
-          res.body.length.should.equal(3)
-          #res.body.should.include({ name: "Test School 2" })
+          res.body.length.should.equal(1)
+          done()
+
+
+  describe "GET /schools/:id/stages/:id/periods/:id/classes/:id/classmates", ->
+
+    it "should lists a Classmates in a Class", (done) ->
+      request(url)
+        .get("/api/schools/" + @school._id + "/stages/" + @school.stages[0]._id + "/periods/" + @school.stages[0].periods[1]._id + "/classes/" + @class_added._id + "/classmates")
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end (err, res) ->
+          throw err if err
+          res.should.be.json
+          res.body.length.should.equal(1)
           done()
 
   after (done) ->

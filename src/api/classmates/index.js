@@ -13,5 +13,6 @@ module.exports = function(app, config) {
     session: false
   });
   app.get('/api/schools/:school/stages/:stage/periods/:period/classes/:cls/classmates', classmates.list);
+  app.get('/api/schools/:school/stages/:stage/periods/:period/classes/:cls/classmates/:classmate', classmates.show);
   return app.post('/api/schools/:school/stages/:stage/periods/:period/classes/:cls/classmates', classmates.create);
 };

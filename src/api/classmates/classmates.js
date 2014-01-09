@@ -16,15 +16,55 @@ School = mongoose.model('School');
 Classmate = mongoose.model('Classmate');
 
 exports.list = function(req, res) {
-  console.log("GET: " + req.params);
   return School.findById(req.params.school, function(err, school) {
-    var cls, period, stage;
+    var cls, period, stage, _i, _len, _ref;
     if (!err) {
       if (school) {
-        stage = school.stages.id(req.params.school);
-        period = stage.id(req.params.period);
-        cls = period.id(req.params.cls);
-        return res.send(cls.classmates);
+        stage = school.stages.id(req.params.stage);
+        period = stage.periods.id(req.params.period);
+        _ref = period.classes;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          cls = _ref[_i];
+          if (cls._id === req.params.cls) {
+            return res.send(cls.classmates);
+          }
+        }
+      } else {
+        console.log("Resource not found!");
+        res.statusCode = 400;
+        return res.send("Error 400: Resource not found!");
+      }
+    } else {
+      return console.log(err);
+      res.statusCode = 500;
+      return res.send("Error 500: Internal Server Error found!");
+    }
+  });
+};
+
+exports.show = function(req, res) {
+  return School.findById(req.params.school, function(err, school) {
+    var classmate, cls, period, stage, _i, _j, _len, _len1, _ref, _ref1;
+    if (!err) {
+      if (school) {
+        stage = school.stages.id(req.params.stage);
+        period = stage.periods.id(req.params.period);
+        _ref = period.classes;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          cls = _ref[_i];
+          if (cls._id === req.params.cls) {
+            _ref1 = cls.classmates;
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              classmate = _ref1[_j];
+              if (classmate === req.params.classmate) {
+                return res.send(classmate);
+              }
+            }
+          }
+        }
+        console.log("Resource not found!");
+        res.statusCode = 400;
+        return res.send("Error 400: Resource not found!");
       } else {
         console.log("Resource not found!");
         res.statusCode = 400;

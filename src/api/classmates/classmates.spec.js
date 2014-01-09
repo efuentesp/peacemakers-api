@@ -25,7 +25,8 @@ describe("Classmate API", function() {
   var url;
   url = "http://localhost:3000";
   before(function(done) {
-    var class1;
+    var class1,
+      _this = this;
     class1 = new Class({
       name: "Class 1.2.1"
     });
@@ -38,8 +39,7 @@ describe("Classmate API", function() {
             {
               name: "Period 1.1"
             }, {
-              name: "Period 1.2",
-              classes: [class1]
+              name: "Period 1.2"
             }
           ]
         }, {
@@ -54,12 +54,19 @@ describe("Classmate API", function() {
         }
       ]
     });
-    return this.school.save(function(err) {
-      should.not.exist(err);
+    this.school.save(function(err) {
+      return should.not.exist(err);
+    });
+    return request(url).post("/api/schools/" + this.school._id + "/stages/" + this.school.stages[0]._id + "/periods/" + this.school.stages[0].periods[1]._id + "/classes").send(class1).expect('Content-Type', /json/).expect(200).end(function(err, res) {
+      if (err) {
+        throw err;
+      }
+      _this.class_added = res.body;
+      _this.class_added.name.should.equal('Class 1.2.1');
       return done();
     });
   });
-  describe("POST /classes/:id/classmates", function() {
+  describe("POST /schools/:id/stages/:id/periods/:id/classes/:id/classmates", function() {
     it("should creates a new Classmate", function(done) {
       var classmate,
         _this = this;
@@ -67,25 +74,36 @@ describe("Classmate API", function() {
         firstName: "Classmate FirstName",
         lastName: "Classmate LastName"
       };
-      return request(url).post("/api/schools/" + this.school._id + "/stages/" + this.school.stages[0]._id + "/periods/" + this.school.stages[0].periods[1]._id + "/classes/" + this.school.stages[0].periods[1].classes[0]._id + "/classmates").field("firstName", classmate.firstName).field("lastName", classmate.lastName).attach('photo', __dirname + '/photo.jpg').end(function(err, res) {
-        var classmate_added;
+      return request(url).post("/api/schools/" + this.school._id + "/stages/" + this.school.stages[0]._id + "/periods/" + this.school.stages[0].periods[1]._id + "/classes/" + this.class_added._id + "/classmates").field("firstName", classmate.firstName).field("lastName", classmate.lastName).attach('photo', __dirname + '/photo.jpg').end(function(err, res) {
         if (err) {
           throw err;
         }
         res.should.have.status(200);
-        classmate_added = res.body;
-        classmate_added.firstName.should.equal('Classmate FirstName');
-        classmate_added.lastName.should.equal('Classmate LastName');
+        _this.classmate_added = res.body;
+        _this.classmate_added.firstName.should.equal('Classmate FirstName');
+        _this.classmate_added.lastName.should.equal('Classmate LastName');
         return done();
       });
     });
-    return it("should link a Classmate within a Class", function(done) {
-      return request(url).get("/api/schools/" + this.school._id + "/stages/" + this.school.stages[0]._id + "/periods/" + this.school.stages[0].periods[1]._id + "/classes/" + this.school.stages[0].periods[1].classes[0]._id + "/classmates").expect('Content-Type', /json/).expect(200).end(function(err, res) {
+    return it("should link a Classmate in a Class", function(done) {
+      return request(url).get("/api/schools/" + this.school._id + "/stages/" + this.school.stages[0]._id + "/periods/" + this.school.stages[0].periods[1]._id + "/classes/" + this.class_added._id + "/classmates/" + this.classmate_added._id).expect('Content-Type', /json/).expect(200).end(function(err, res) {
         if (err) {
           throw err;
         }
         res.should.be.json;
-        res.body.length.should.equal(3);
+        res.body.length.should.equal(1);
+        return done();
+      });
+    });
+  });
+  describe("GET /schools/:id/stages/:id/periods/:id/classes/:id/classmates", function() {
+    return it("should lists a Classmates in a Class", function(done) {
+      return request(url).get("/api/schools/" + this.school._id + "/stages/" + this.school.stages[0]._id + "/periods/" + this.school.stages[0].periods[1]._id + "/classes/" + this.class_added._id + "/classmates").expect('Content-Type', /json/).expect(200).end(function(err, res) {
+        if (err) {
+          throw err;
+        }
+        res.should.be.json;
+        res.body.length.should.equal(1);
         return done();
       });
     });

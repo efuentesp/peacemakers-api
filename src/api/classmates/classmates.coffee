@@ -10,14 +10,47 @@ Classmate = mongoose.model('Classmate')
 # GET /api/schools/{school-id}/stages/{stage-id}/periods/{period-id}/classes/{class-id}/classmates
 # lists all classmates in a class
 exports.list = (req, res) ->
-  console.log "GET: #{req.params}"
+  #console.log "GET: "
+  #console.log req.params
+
   return School.findById req.params.school, (err, school) ->
     if not err
       if school
-        stage = school.stages.id(req.params.school)
-        period = stage.id(req.params.period)
-        cls = period.id(req.params.cls)
-        return res.send cls.classmates
+        stage = school.stages.id(req.params.stage)
+        period = stage.periods.id(req.params.period)
+        #cls = period.classes.id(req.params.cls)
+        for cls in period.classes
+          if cls._id is req.params.cls
+            return res.send cls.classmates
+      else
+        console.log "Resource not found!"
+        res.statusCode = 400
+        return res.send "Error 400: Resource not found!"
+    else
+      return console.log err
+      res.statusCode = 500
+      return res.send "Error 500: Internal Server Error found!"
+
+# TODO: Get only one classmate
+# GET /api/schools/{school-id}/stages/{stage-id}/periods/{period-id}/classes/{class-id}/classmates/{classmate-id}
+# show classmate in a class
+exports.show = (req, res) ->
+  #console.log "GET: "
+  #console.log req.params
+
+  return School.findById req.params.school, (err, school) ->
+    if not err
+      if school
+        stage = school.stages.id(req.params.stage)
+        period = stage.periods.id(req.params.period)
+        for cls in period.classes
+          if cls._id is req.params.cls
+            for classmate in cls.classmates
+              if classmate is req.params.classmate
+                return res.send classmate
+        console.log "Resource not found!"
+        res.statusCode = 400
+        return res.send "Error 400: Resource not found!"
       else
         console.log "Resource not found!"
         res.statusCode = 400
@@ -32,6 +65,7 @@ exports.list = (req, res) ->
 # create a new classmate in a class
 exports.create = (req, res) ->
   #console.log "POST: "
+  #console.log req.params
   #console.log req.body
 
   photo = req.files.photo

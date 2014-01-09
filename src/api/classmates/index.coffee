@@ -7,5 +7,6 @@ module.exports = (app, config) ->
 
   #app.get     '/api/schools',     bearer, authorization.restrictTo('schools', 'list'), schools.list
   app.get      '/api/schools/:school/stages/:stage/periods/:period/classes/:cls/classmates',  classmates.list
+  app.get      '/api/schools/:school/stages/:stage/periods/:period/classes/:cls/classmates/:classmate',  classmates.show
   app.post     '/api/schools/:school/stages/:stage/periods/:period/classes/:cls/classmates',  classmates.create
   #app.post     '/api/classes/:classId/classmates',     classmates.create
