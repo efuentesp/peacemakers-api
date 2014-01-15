@@ -53,6 +53,7 @@ describe "Classmate API", ->
         .field("lastName", classmate.lastName)
         .attach('photo', __dirname+'/photo.jpg')
         .end (err, res) =>
+          #console.log res.text
           throw err if err
           res.should.have.status 200
           @classmate_added = res.body

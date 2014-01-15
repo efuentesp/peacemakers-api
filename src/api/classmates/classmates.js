@@ -16,28 +16,13 @@ School = mongoose.model('School');
 Classmate = mongoose.model('Classmate');
 
 exports.list = function(req, res) {
-  return School.findById(req.params.school, function(err, school) {
-    var cls, period, stage, _i, _len, _ref;
+  return School.findClass(req.params.school, req.params.stage, req.params.period, req.params.cls, function(err, cls) {
     if (!err) {
-      if (school) {
-        stage = school.stages.id(req.params.stage);
-        period = stage.periods.id(req.params.period);
-        _ref = period.classes;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          cls = _ref[_i];
-          if (cls._id === req.params.cls) {
-            return res.send(cls.classmates);
-          }
-        }
-      } else {
-        console.log("Resource not found!");
-        res.statusCode = 400;
-        return res.send("Error 400: Resource not found!");
-      }
+      return res.send(cls.classmates);
     } else {
-      return console.log(err);
+      return console.log("Error 500: " + err);
       res.statusCode = 500;
-      return res.send("Error 500: Internal Server Error found!");
+      return res.send("Error 500: " + err);
     }
   });
 };
@@ -53,76 +38,100 @@ exports.show = function(req, res) {
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           cls = _ref[_i];
           if (cls._id === req.params.cls) {
+            console.log(cls);
             _ref1 = cls.classmates;
             for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
               classmate = _ref1[_j];
+              console.log(classmate);
               if (classmate === req.params.classmate) {
                 return res.send(classmate);
               }
             }
           }
         }
-        console.log("Resource not found!");
+        console.log("Error 400: Classmate [" + req.params.classmate + "] not found!");
         res.statusCode = 400;
-        return res.send("Error 400: Resource not found!");
+        return res.send("Error 400: Classmate [" + req.params.classmate + "] not found!");
       } else {
-        console.log("Resource not found!");
+        console.log("Error 400: School [" + req.params.school + "] not found!");
         res.statusCode = 400;
-        return res.send("Error 400: Resource not found!");
+        return res.send("Error 400: School [" + req.params.school + "] not found!");
       }
     } else {
-      return console.log(err);
+      return console.log("Error 500: " + err);
       res.statusCode = 500;
-      return res.send("Error 500: Internal Server Error found!");
+      return res.send("Error 500: " + err);
     }
   });
 };
 
 exports.create = function(req, res) {
-  var classmate, errors, photo;
+  var errors, photo;
   photo = req.files.photo;
   req.assert('firstName', 'Please enter a first name').notEmpty();
   req.assert('lastName', 'Please enter a last name').notEmpty();
   errors = req.validationErrors(true);
   if (!errors) {
-    classmate = new Classmate(req.body);
-    classmate.save(function(err) {
-      var tempPath, thumbPath;
+    return School.findClass(req.params.school, req.params.stage, req.params.period, req.params.cls, function(err, cls) {
+      var classmate;
       if (!err) {
-        tempPath = '/home/efuentesp/development/peacemakers/uploads/temp/' + classmate.id + '.jpg';
-        thumbPath = '/home/efuentesp/development/peacemakers/uploads/thumb/' + classmate.id + '.jpg';
-        async.series({
-          resizePhoto: function(done) {
-            return fs.readFile(photo.path, function(err, data) {
-              return fs.writeFile(tempPath, data, function(err) {
-                return im.resize({
-                  srcPath: tempPath,
-                  dstPath: thumbPath,
-                  width: 100,
-                  height: 120
-                }, function(err, stdout, stderr) {
+        classmate = new Classmate(req.body);
+        return classmate.save(function(err) {
+          var tempPath, thumbPath;
+          if (!err) {
+            tempPath = '/home/efuentesp/development/peacemakers/uploads/temp/' + classmate.id + '.jpg';
+            thumbPath = '/home/efuentesp/development/peacemakers/uploads/thumb/' + classmate.id + '.jpg';
+            async.series({
+              addToSchool: function(done) {
+                console.log("AddToSchool!!");
+                return School.addClassmate(req.params.school, req.params.stage, req.params.period, req.params.cls, classmate._id, function(err, school) {
                   if (err) {
-                    done(err);
+                    console.log("Error 500: " + err);
+                    res.statusCode = 500;
+                    return res.send("Error 500: " + err);
                   }
+                  console.log(school.stages[0].periods[1].classes[0]);
                   return done();
                 });
-              });
+              },
+              resizePhoto: function(done) {
+                return fs.readFile(photo.path, function(err, data) {
+                  return fs.writeFile(tempPath, data, function(err) {
+                    return im.resize({
+                      srcPath: tempPath,
+                      dstPath: thumbPath,
+                      width: 100,
+                      height: 120
+                    }, function(err, stdout, stderr) {
+                      if (err) {
+                        done(err);
+                      }
+                      return done();
+                    });
+                  });
+                });
+              },
+              deletePhoto: function(done) {
+                fs.unlinkSync(tempPath);
+                return done();
+              }
             });
-          },
-          deletePhoto: function(done) {
-            return fs.unlinkSync(tempPath);
+            return res.send(classmate);
+          } else {
+            console.log("Error 500: " + err);
+            res.statusCode = 500;
+            return res.send("Error 500: " + err);
           }
         });
-        return res.send(classmate);
       } else {
-        console.log(err);
+        console.log("Error 500: " + err);
         res.statusCode = 500;
-        return res.send("Error 500: Internal Server Error found!");
+        return res.send("Error 500: " + err);
       }
     });
-    return res.send(classmate);
   } else {
+    console.log("Error 400: " + errors);
     res.statusCode = 400;
-    return res.send(errors);
+    return res.send("Error 400: " + errors);
   }
 };
